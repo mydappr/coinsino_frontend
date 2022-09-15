@@ -8,7 +8,7 @@ import { app, database } from "./Firebase";
 import { doc, getDoc } from "firebase/firestore";
 const coinSinoContractAddress = "0xdC9d2bBb598169b370F12e45D97258dd34ba19C0";
 
-export async function handler(req, res) {
+export async function closehandler(req, res) {
   try {
     console.log("closing");
     const drandres = await fetch("https://drandapi.herokuapp.com/fetch");

@@ -8,22 +8,7 @@ import { app, database } from "./Firebase";
 import { doc, getDoc } from "firebase/firestore";
 const coinSinoContractAddress = "0xdC9d2bBb598169b370F12e45D97258dd34ba19C0";
 
-export async function handler(req, res) {
-  try {
-    const authorization_key = req.headers.authorization;
-    const docRef = doc(database, "authorization", authorization_key);
-    const docSnap = await getDoc(docRef);
-
-    // verify token
-    const data = docSnap.data();
-    const verification = jwt.verify(data.token, process.env.jwt_secret);
-
-    // check if roles from data and verification are correct
-
-    if (data.role !== verification.role) return;
-  } catch (error) {
-    return res.status(400).json({ Error: "Something went wrong" });
-  }
+export async function drawhandler(req, res) {
 
   try {
     const drandres = await fetch("https://drandapi.herokuapp.com/fetch");
