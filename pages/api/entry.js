@@ -31,7 +31,7 @@ export default async function handler(req, res) {
   }
 
   // next, get current lottery status
-  let lotteryStatus;
+  let lotteryStatus, operatorcoinSinoContract;
 
   try {
     // get lottery ID and status
@@ -46,7 +46,7 @@ export default async function handler(req, res) {
       operatorProvider
     );
     const managedSigner = new NonceManager(operatorSigner);
-    const operatorcoinSinoContract = new ethers.Contract(
+    operatorcoinSinoContract = new ethers.Contract(
       coinSinoContractAddress,
       Sinoabi,
       managedSigner
