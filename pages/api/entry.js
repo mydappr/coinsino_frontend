@@ -15,17 +15,8 @@ export default async function handler(req, res) {
   try {
     const authorization_key = req.headers.authorization;
 
-    console.log(authorization_key);
-    const docRef = doc(database, "authorization", authorization_key);
-    const docSnap = await getDoc(docRef);
-
-    console.log("passed authorization check");
-
-    // console.log(docSnap.exists());
-
-    // check if key exists move to next process
-    if (!docSnap.exists())
-      return res.status(401).json({ Error: "Unauthorized" });
+    if (authorization_key !== process.env.entryKey);
+    return res.status(401).json({ Error: "Unauthorized" });
   } catch (error) {
     return res.status(400).json({ Error: "Not Authorized!" });
   }
