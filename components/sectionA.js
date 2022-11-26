@@ -29,6 +29,8 @@ import {
   sinoAddress,
   rpcaddress,
   networkID,
+  netWorkName,
+  chainAvailbility,
 } from "../atoms/atoms";
 import BuyDialog from "./buyDialog";
 import { providers } from "ethers";
@@ -67,6 +69,7 @@ function SectionA({ keys }) {
   const [proverConnector, setProviderConnector] = useState("");
   const [walletModal, setwalletModal] = useRecoilState(usewalletModal);
   const [lotteryStatus, setlotteryStatus] = useRecoilState(Lstatus);
+  const [chainName, setChainName] = useRecoilState(netWorkName);
   const [timeElasped, setTimeElapsed] = useState(false);
   const [rngData, setrngData] = useRecoilState(drandData);
   const [currentUserTicket, setCurrentUserTicket] = useState([]);
@@ -78,6 +81,7 @@ function SectionA({ keys }) {
   const [telosPool, setTelosPool] = useState(true);
   const [ethPool, setEthPool] = useState(false);
   const [bnbPool, setBnbPool] = useState(false);
+  const [notAvailable, setNotAvailable] = useRecoilState(chainAvailbility);
 
   // closeviewticket
   function closeViewTickets() {
@@ -189,10 +193,6 @@ function SectionA({ keys }) {
     const s = dateString.seconds();
     let maxTime = moment();
 
-
-
-    
-
     maxTime.set({
       year: y,
       month: mo,
@@ -249,7 +249,7 @@ function SectionA({ keys }) {
       >
         {/* toast Message */}
         <ToastContainer />
-        <div className=" mx-auto mt-0 h-[300px] w-full bg-[url('/images/heroBg.png')] bg-cover bg-right  md:h-[500px]">
+        <div className=" mx-auto mt-0 h-[300px] w-full bg-[url('/images/heroBg.png')] bg-cover bg-right bg-no-repeat  md:h-[500px]">
           <div className="mx-auto flex h-full  max-w-[300px] flex-col justify-between text-center  ">
             <h2 className="mt-2 text-base font-bold text-coinSinoTextColor md:mt-3">
               The pool lottery
@@ -266,7 +266,10 @@ function SectionA({ keys }) {
                     decimal="."
                     end={totalLotteryDeposit}
                   />{" "}
-                  Tlos
+                  <span className="uppercase">
+                    {" "}
+                    {chainName ? chainName : "TLOS"}
+                  </span>
                 </h2>
               ) : (
                 <div className="waiting w-40 md:w-80"></div>
@@ -275,9 +278,11 @@ function SectionA({ keys }) {
 
             {currentAccount ? (
               <button
-                disabled={timeElasped || lotteryStatus !== Open}
+                disabled={
+                  timeElasped || lotteryStatus !== Open || !notAvailable
+                }
                 className={`w-[200px] cursor-pointer self-center rounded-xl bg-coinSinoGreen p-3   font-bold text-coinSinoTextColor sm:mb-5 ${
-                  (timeElasped || lotteryStatus !== Open) &&
+                  (timeElasped || lotteryStatus !== Open || !notAvailable) &&
                   "cursor-not-allowed bg-gray-600"
                 }`}
                 onClick={() => {
@@ -432,8 +437,10 @@ function SectionA({ keys }) {
                     decimal="."
                     end={totalLotteryDeposit}
                   />{" "}
-                  Tlos
                 </strong>
+                <span className="uppercase">
+                  {chainName ? chainName : "TLOS"}
+                </span>
               </p>
               {currentAccount && (
                 <p>
@@ -580,20 +587,36 @@ function SectionA({ keys }) {
           <BuyDialog />
 
           {/* list of pools */}
-          <div className=" my-5 flex flex-wrap justify-between  gap-2 p-2   sm:p-10">
+          <div className=" my-5 mx-auto mt-0 flex w-fit flex-wrap justify-between gap-2  self-center p-2  sm:p-10">
             <div>
               {currentAccount ? (
                 <button
-                  disabled={timeElasped || lotteryStatus !== Open}
+                  disabled={
+                    timeElasped || lotteryStatus !== Open || !notAvailable
+                  }
                   className={`joinBtn ${
-                    (timeElasped || lotteryStatus !== Open) &&
+                    (timeElasped || lotteryStatus !== Open || !notAvailable) &&
                     "cursor-not-allowed bg-gray-600"
                   }`}
                   onClick={() => {
-                    setbuyModalState(true);
+                    if (Number(chainId === 41)) {
+                      setbuyModalState(true);
+                    } else {
+                      setNotAvailable(true);
+                    }
                   }}
                 >
-                  Join TLOS pool
+                  {!notAvailable ? (
+                    <span>
+                      {" "}
+                      Coming soon on{" "}
+                      <span className="uppercase">{chainName}</span>!
+                    </span>
+                  ) : (
+                    <span>
+                      Join <span className="uppercase">{chainName}</span> pool
+                    </span>
+                  )}
                 </button>
               ) : (
                 <p
@@ -607,7 +630,11 @@ function SectionA({ keys }) {
               )}
 
               <p className=" mt-3 text-center">
-                Total Tlos:{" "}
+                Total{" "}
+                <span className="uppercase">
+                  {chainName ? chainName : "TLOS"}
+                </span>
+                :{" "}
                 <strong className=" text-coinSinoGreen">
                   <CountUp
                     duration={3}
@@ -620,7 +647,7 @@ function SectionA({ keys }) {
               </p>
             </div>
 
-            <div>
+            {/* <div>
               <p className="joinBtn cursor-not-allowed bg-gray-600">
                 Join BNB pool
               </p>
@@ -643,7 +670,7 @@ function SectionA({ keys }) {
               <p className=" mt-3 text-center">
                 Total Eos: <strong className=" text-coinSinoGreen">0</strong>
               </p>
-            </div>
+            </div> */}
           </div>
           <p className=" mt-3 p-2 text-center text-base text-coinSinoTextColor">
             Match the winning numbers in the same order and share prizes:
@@ -670,52 +697,7 @@ function SectionA({ keys }) {
                     setBnbPool(false);
                   }}
                 >
-                  Tlos pool
-                </button>
-              </li>
-              <li className="mr-2" role="presentation">
-                <button
-                  
-                  className={`inline-block cursor-not-allowed rounded-t-lg border-b-2  border-transparent p-4 text-coinSinoTextColor2  outline-none ${
-                    bnbPool &&
-                    " border-blue-600  text-blue-600 hover:text-blue-600"
-                  }`}
-                  id="dashboard-tab"
-                  data-tabs-target="#dashboard"
-                  type="button"
-                  role="tab"
-                  aria-controls="dashboard"
-                  aria-selected="false"
-                  onClick={() => {
-                    setEthPool(false);
-                    setTelosPool(false);
-                    setBnbPool(true);
-                  }}
-                >
-                  Bnb Pool(Inactive)
-                </button>
-              </li>
-
-              <li className="mr-2" role="presentation">
-                <button
-                  disabled={true}
-                  className={`inline-block cursor-not-allowed rounded-t-lg border-b-2  border-transparent p-4 text-coinSinoTextColor2  outline-none ${
-                    bnbPool &&
-                    " border-blue-600  text-blue-600 hover:text-blue-600"
-                  }`}
-                  id="dashboard-tab"
-                  data-tabs-target="#dashboard"
-                  type="button"
-                  role="tab"
-                  aria-controls="dashboard"
-                  aria-selected="false"
-                  onClick={() => {
-                    setEthPool(true);
-                    setTelosPool(false);
-                    setBnbPool(false);
-                  }}
-                >
-                  Eth Pool(Inactive)
+                  {chainName ? <span className="uppercase">{chainName}</span> : "TLOS"} pool
                 </button>
               </li>
             </ul>
@@ -723,7 +705,7 @@ function SectionA({ keys }) {
 
           <div className=" mx-auto my-0 max-w-[700px] p-5    text-center">
             {telosPool && (
-              <div className="flex flex-wrap  gap-2 justify-between  sm:justify-start ">
+              <div className="flex flex-wrap  justify-between gap-2  sm:justify-start ">
                 <div className=" poolBar">
                   <h2 className="text-base  font-bold  text-coinSinoTextColor">
                     Match first 1
@@ -736,7 +718,8 @@ function SectionA({ keys }) {
                       decimal="."
                       end={firstPoolFunds}
                     />
-                    TLOS
+            {' '}
+                    {chainName ? <span className="uppercase">{chainName}</span> : "TLOS"}
                   </strong>
                   <p className=" text-center   font-bold text-coinSinoTextColor2">
                     ~${" "}
@@ -761,8 +744,8 @@ function SectionA({ keys }) {
                       decimals={3}
                       decimal="."
                       end={secondPoolFunds}
-                    />
-                    TLOS
+                    />{" "}
+                   {chainName ? <span className="uppercase">{chainName}</span> : "TLOS"}
                   </strong>
                   <p className="    text-coinSinoTextColor2">
                     ~$
@@ -787,7 +770,7 @@ function SectionA({ keys }) {
                       decimal="."
                       end={thirdPoolFunds}
                     />{" "}
-                    TLOS
+                   {chainName ? <span className="uppercase">{chainName}</span> : "TLOS"}
                   </strong>
                   <p className="    text-coinSinoTextColor2">
                     ~${" "}
@@ -812,7 +795,7 @@ function SectionA({ keys }) {
                       decimal="."
                       end={fourthPoolFunds}
                     />{" "}
-                    TLOS
+                    {chainName ? chainName : "TLOS"}
                   </strong>
                   <p className="    text-coinSinoTextColor2">
                     ~${" "}
@@ -837,7 +820,7 @@ function SectionA({ keys }) {
                       decimal="."
                       end={fifthPoolFunds}
                     />{" "}
-                    TLOS
+                   {chainName ? <span className="uppercase">{chainName}</span> : "TLOS"}
                   </strong>
                   <p className="    text-coinSinoTextColor2">
                     ~${" "}
@@ -862,7 +845,7 @@ function SectionA({ keys }) {
                       decimal="."
                       end={sixthPoolFunds}
                     />{" "}
-                    TLOS
+                {chainName ? <span className="uppercase">{chainName}</span> : "TLOS"}
                   </strong>
                   <p className="    text-coinSinoTextColor2">
                     ~${" "}
@@ -888,7 +871,7 @@ function SectionA({ keys }) {
                       decimal="."
                       end={platFormFee}
                     />{" "}
-                    TLOS
+                  {chainName ? <span className="uppercase">{chainName}</span> : "TLOS"}
                   </strong>
                   <p className="    text-coinSinoTextColor2">
                     ~$
