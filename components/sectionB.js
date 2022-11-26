@@ -230,7 +230,7 @@ function SectionB({ keys }) {
 
         if (_networkId !== chainId) {
           setisloading(false);
-          Toast("You are not connected to the Telos Netowrk!");
+          Toast("You are not connected to the Telos Testnet Netowrk!");
           return;
         }
 

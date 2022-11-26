@@ -155,6 +155,10 @@ export const networkID = atom({
   key: " _chainId",
   default: 41,
 });
+export const netWorkName = atom({
+  key: " _networkName",
+  default: "",
+});
 
 export const wonPoolLength = atom({
   key: " _wonPoolLength",
@@ -163,4 +167,9 @@ export const wonPoolLength = atom({
 export const wonid = atom({
   key: " _wonid",
   default: [],
+});
+
+export const chainAvailbility = atom({
+  key: "chainAvailbility",
+  default: false,
 });
