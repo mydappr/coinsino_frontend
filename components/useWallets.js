@@ -69,7 +69,7 @@ function useWallets() {
       } else {
         setNotAvailable(false);
         const networkDetails = getUserChain(Number(_networkId));
-        setChainName(networkDetails.name);
+        setChainName(networkDetails?.name);
       }
 
       const accounts = await ethereum.request({ method: "eth_accounts" });
@@ -144,7 +144,10 @@ function useWallets() {
 
   // detect Network account change
   useEffect(() => {
-    window.ethereum.on("networkChanged", function (networkId) {
+    const { ethereum } = window;
+    if (!ethereum) return;
+
+    ethereum.on("chainChanged", function (networkId) {
       if (Number(networkId) === 41) {
         setNotAvailable(true);
         setChainName("tlos");
